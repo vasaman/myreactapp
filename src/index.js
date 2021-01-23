@@ -1,37 +1,56 @@
 import React , {useState}from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-function AddPersonForm() {
+function AddPersonForm(props) {
   const[person, setPerson]=useState("");
+  
+  function handleChange(e) {
+    setPerson(e.target.value);
+  }
+  function handleSubmit(e) {
+    if(person !== "") {
+      props.handleSubmit(person);
+      setPerson('');
+    }
+    e.preventDefault();
+  }
   return(
-    <form>
+    <form onSubmit={handleSubmit}>
       <input type="text"
-      placeholder="add new contact">
+      placeholder="add new contact"
+      onChange={handleChange}
+      value={person}
+      >
       </input>
-      <button></button>
+      <button type="submit">add</button>
     </form>
   )
   
 }
-function PeopleList(props) {
+function  PeopleList(props) {
   const arr=props.data;
   const listItems=arr.map((val,index) =>
-    <li key={index }> {val} </li>
+    <li key={index}> {val} </li>
   );
 
   return <ol>{listItems}</ol>  
 }
-const contacts=["jethalal","mehta","popatlal"];
-const el=(
-  <div> 
-  
-    <AddPersonForm />
-    <PeopleList data={contacts}/>
-  </div>
-);
-
+function ContactManager(props) {
+  const [contacts,setContacts] =useState(props.data);
+  function addPerson(name) {
+    setContacts([...contacts,name]);
+  }
+  return (
+    <div>
+      <AddPersonForm handleSubmit={addPerson}/>
+      <PeopleList data={contacts} />
+    </div>
+  )
+    
+}
+const contacts = ["jethalal", "mehta", "popatlal"];
 ReactDOM.render(
-  el,
+  <ContactManager data={contacts} />,
   document.getElementById('root')
 );
 
